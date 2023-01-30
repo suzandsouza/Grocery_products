@@ -1,20 +1,33 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const products = require('./routes/products')
+const productsRoutes = require('./routes/products')
 const cors = require('cors')
 require('dotenv').config()
-const bcrypt = require('bcrypt')
 const Products = require('./Products');
 const Orders = require('./Orders');
 const Users_event = require('./Users');
- 
+const userRouter= require('./routes/user')  //for authentication i.e signup and login
+//express app
 const app = express()
+
+//middleware
 app.use(express.json())
+
 //express.json is used to parse the incoming requests with JSON payloads and is based upon the bodyparser
 //used for parsing the JSON header
 app.use(cors());
 //cors=>cross-origin resource access
 
+app.use((req,res,next)=>{
+  console.log(req.path,req.method)
+  next()
+})
+
+//routes
+//This statement will be used for authorization
+//app.use('/api/products/get',productsRoutes)
+
+app.use('/api/auth',userRouter)
 //connect
 mongoose.connect(process.env.MONGO_URI,{
   useNewUrlParser: true,
@@ -78,6 +91,8 @@ app.post("/api/products/add",(req,res)=>{
 
   res.status(200).json(product)
   })
+
+
   //api for ordering i.e buying/booking
   app.post("/api/orders/add",(req,res)=>{
     const products = req.body.basket;
@@ -101,6 +116,7 @@ app.post("/api/products/add",(req,res)=>{
     })
   })
   
+  //api for order details after successful payment
   app.post("/api/orders/get",(req,res)=>{
     const email = req.body.email;
     Orders.find((err,result)=>{
@@ -114,50 +130,8 @@ app.post("/api/products/add",(req,res)=>{
     })
   })
   
-  //api for login and signup
-  app.post("/api/auth/signup",async(req,res)=>{
-    const {email, password, fullName} = req.body;
-    const encrypt_password = await bcrypt.hash(password,10);
-    const userDetail={
-      email:email,
-      password: encrypt_password,
-      fullName: fullName
-    }
-    const user_exist = await Users_event.findOne({email:email});
-    if(user_exist){
-      res.send({mssg:'Email already in use!'})
-  
-    }
-    else{
-      Users_event.create(userDetail, (err,result)=>{
-        if(err){
-          res.status(500).send({mssg: err.message})
-        }
-        else{
-          res.send({mssg:'User created sucessfully'})
-        }
-      })
-    }
-  })
-  
-  app.post("/api/auth/login",async(req,res)=>{
-    const { email, password }=req.body
-    const userDetail = await Users_event.findOne({email: email});
-    if(userDetail){
-      //we compare the password and the user entered one
-      if(await bcrypt.compare(password, userDetail.password)){
-        res.send(userDetail);
-      }
-      else{
-        res.send({error: "Incorrect password"})
-      }
-    }
-    else{
-      res.send({error:"User does not exist"}) //i.e the user has not signed up only
-    }
-  })
 
-  // for paymrnt
+  // for payment
   app.post("/api/payment/create", async(req,res)=>{
     const total=req.body.amount;
     console.log("Payment request received for this rupees", total);
@@ -176,5 +150,51 @@ app.post("/api/products/add",(req,res)=>{
    
   });
   
+   //api for login and signup
+  //this has been shifted to user file in routes folder
+  //for authentication using jwt
+
+  // app.post("/api/auth/signup",async(req,res)=>{
+  //   const {email, password, fullName} = req.body;
+  //   const encrypt_password = await bcrypt.hash(password,10);
+  //   const userDetail={
+  //     email:email,
+  //     password: encrypt_password,
+  //     fullName: fullName
+  //   }
+  //   const user_exist = await Users_event.findOne({email:email});
+  //   if(user_exist){
+  //     res.send({mssg:'Email already in use!'})
+  
+  //   }
+  //   else{
+  //     Users_event.create(userDetail, (err,result)=>{
+  //       if(err){
+  //         res.status(500).send({mssg: err.message})
+  //       }
+  //       else{
+  //         res.send({mssg:'User created sucessfully'})
+  //       }
+  //     })
+  //   }
+  // })
+  
+  // app.post("/api/auth/login",async(req,res)=>{
+  //   const { email, password }=req.body
+  //   const userDetail = await Users_event.findOne({email: email});
+  //   if(userDetail){
+  //     //we compare the password and the user entered one
+  //     if(await bcrypt.compare(password, userDetail.password)){
+  //       res.send(userDetail);
+  //     }
+  //     else{
+  //       res.send({error: "Incorrect password"})
+  //     }
+  //   }
+  //   else{
+  //     res.send({error:"User does not exist"}) //i.e the user has not signed up only
+  //   }
+  // })
+
   app.listen(process.env.PORT,()=>
   console.log('Clearly listening on port',process.env.PORT))

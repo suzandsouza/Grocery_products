@@ -1,8 +1,8 @@
+//form for adding products
+
 import instance from "../axios";
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useEffect } from "react";
-import { useAuthContext } from "../hooks/useAuthContext";
 function AddProduct() {
   const [title, setTitle] = useState("");
   const [imageURL, setImageURL] = useState("");

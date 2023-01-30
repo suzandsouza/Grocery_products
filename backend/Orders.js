@@ -1,3 +1,4 @@
+//schema for orders
 const mongoose = require('mongoose')
 const orderSchema = mongoose.Schema({
     price: Number,

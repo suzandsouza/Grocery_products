@@ -1,3 +1,4 @@
+//schema for products
 const mongoose = require('mongoose')
 const productSchema = mongoose.Schema({
     name:String,

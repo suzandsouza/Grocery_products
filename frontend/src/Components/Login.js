@@ -33,9 +33,7 @@ function Login() {
   };
   return (
     <Container>
-      <Logo onClick={() => navigate("/")}>
-        <img src="./amazon_logo.png" alt="" />
-      </Logo>
+
 
       <FormContainer>
         <h3>Login</h3>
