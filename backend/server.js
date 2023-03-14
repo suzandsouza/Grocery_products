@@ -5,7 +5,7 @@ const cors = require('cors')
 require('dotenv').config()
 const Products = require('./Products');
 const Orders = require('./Orders');
-const Users_event = require('./Users');
+const users_product = require('./Users');
 const userRouter= require('./routes/user')  //for authentication i.e signup and login
 //express app
 const app = express()
@@ -27,6 +27,7 @@ app.use((req,res,next)=>{
 //This statement will be used for authorization
 //app.use('/api/products/get',productsRoutes)
 
+
 app.use('/api/auth',userRouter)
 //connect
 mongoose.connect(process.env.MONGO_URI,{
@@ -42,6 +43,7 @@ app.get("/api",(req,res)=>res.status(200).send("Home page"))
 app.post("/api/products/add",(req,res)=>{
     const eventDetail = req.body;
     //console.log("Product details are--> ",eventDetail)
+    
     Products.create(eventDetail, (err,data)=>{
       if(err){
         res.status(500).send(err.message);
@@ -62,12 +64,12 @@ app.post("/api/products/add",(req,res)=>{
       }
     })
   })
-
+  
   //getting all the users
   app.get("/api/users/get",(req,res)=>{
-    Users_event.find((err,data)=>{
+    users_product.find((err,data)=>{
       if(err){
-        res.status(500).send(err)
+        res.send(500).send(err)
       }
       else{
         res.send(200).send(data)
@@ -75,6 +77,7 @@ app.post("/api/products/add",(req,res)=>{
     })
   })
 
+  
   //one particular product
   app.get("/api/products/${id}",(req,res)=>{
     const { id } = req.params

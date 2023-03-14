@@ -19,7 +19,7 @@ const loginUser=async(req,res)=>{
 }
 
 //signup a user
-const signupUser=async(req,res)=>{
+const signup=async(req,res)=>{
     const {email, password, fullName} = req.body
 
     try {
@@ -33,4 +33,4 @@ const signupUser=async(req,res)=>{
       res.status(400).json({error: error.message})
     }
 }
-module.exports={signupUser,loginUser}
+module.exports={signup,loginUser}
