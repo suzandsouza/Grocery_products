@@ -1,8 +1,8 @@
 
 # Grocery Products
-
+<img src="./project-2.jpg"></img>
 The project supports the following features,
-Framework used: React
+The framework used: React
 
 
 
